@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geofence Reminder System</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+        }
+
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+
+        .sidebar {
+            background: #f8f9fa;
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            width: 100%;
+            padding: 14px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .reminder-list {
+            margin-top: 30px;
+        }
+
+        .reminder-list h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .reminder-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .reminder-item h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .reminder-item p {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .reminder-item .radius-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-top: 8px;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #ff3838;
+        }
+
+        .edit-btn {
+            position: absolute;
+            top: 15px;
+            right: 90px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.3s;
+        }
+
+        .edit-btn:hover {
+            background: #5568d3;
+        }
+
+        .status-bar {
+            background: #28a745;
+            color: white;
+            padding: 12px 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status-bar.warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .status-bar.error {
+            background: #dc3545;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #1976D2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 400px;
+            }
+
+            .sidebar {
+                max-height: none;
+            }
+        }
+
+        /* Notification Animation */
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            animation: slideIn 0.5s ease-out;
+            max-width: 350px;
+        }
+
+        .notification-popup h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .notification-popup .close-notif {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* Map Navigation Controls */
+        .map-controls {
+            position: absolute;
+            top: 80px;
+            left: 10px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .nav-btn:hover {
+            background: #f0f0f0;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+            background: #e0e0e0;
+        }
+
+        .center-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 16px;
+        }
+
+        .center-btn:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #65398d 100%);
+        }
+
+        @media (max-width: 768px) {
+            .map-controls {
+                top: 10px;
+                right: 10px;
+                left: auto;
+            }
+
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📍 Geofence Reminder System</h1>
+            <p>Set location-based reminders that alert you when nearby</p>
+        </div>
+
+        <div id="statusBar" class="status-bar">
+            🔄 Initializing GPS...
+        </div>
+
+        <div class="content">
+            <div style="position: relative;">
+                <div id="map"></div>
+
+                <!-- Map Navigation Controls -->
+                <div class="map-controls">
+                    <div class="control-row">
+                        <button class="nav-btn" id="panUp" title="Pan Up">▲</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="nav-btn" id="panLeft" title="Pan Left">◀</button>
+                        <button class="nav-btn center-btn" id="centerMap" title="Center on Me">🎯</button>
+                        <button class="nav-btn" id="panRight" title="Pan Right">▶</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="nav-btn" id="panDown" title="Pan Down">▼</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="info-box">
+                    <p><strong>📍 How to use:</strong></p>
+                    <p>1. Click on the map to select a location</p>
+                    <p>2. Fill in your reminder details</p>
+                    <p>3. Set how close you need to be (radius)</p>
+                    <p>4. Get notified when you enter the area!</p>
+                </div>
+
+                <form id="reminderForm">
+                    <div class="form-group">
+                        <label for="reminderTitle">📝 Reminder Title</label>
+                        <input type="text" id="reminderTitle" placeholder="e.g., Buy groceries" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reminderNote">💬 Notes (optional)</label>
+                        <textarea id="reminderNote" placeholder="Additional details..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reminderRadius">⭕ Alert Radius</label>
+                        <select id="reminderRadius" required>
+                            <option value="50">50 meters (Very close)</option>
+                            <option value="100" selected>100 meters (Close)</option>
+                            <option value="200">200 meters (Nearby)</option>
+                            <option value="500">500 meters (Area)</option>
+                            <option value="1000">1 kilometer (Wide area)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📌 Selected Location</label>
+                        <input type="text" id="selectedLocation" placeholder="Click on map to select" readonly>
+                    </div>
+
+                    <button type="submit" class="btn" id="addReminderBtn" disabled>
+                        ➕ Add Geofence Reminder
+                    </button>
+                </form>
+
+                <div class="reminder-list">
+                    <h3>📋 Active Reminders (<span id="reminderCount">0</span>)</h3>
+                    <div id="remindersList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            defaultCenter: [20.5937, 78.9629], // India center
+            defaultZoom: 5,
+            checkInterval: 10000, // Check location every 10 seconds
+            notificationSound: true
+        };
+
+        // ==================== STATE MANAGEMENT ====================
+        let map;
+        let userMarker;
+        let selectedMarker;
+        let selectedLocation = null;
+        let reminders = [];
+        let watchId = null;
+        let userLocation = null;
+        let geofenceCircles = [];
+        let editingId = null; // Track which reminder is being edited
+
+        // ==================== INITIALIZE MAP ====================
+        function initMap() {
+            map = L.map('map').setView(CONFIG.defaultCenter, CONFIG.defaultZoom);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Click event to select location
+            map.on('click', function (e) {
+                setSelectedLocation(e.latlng);
+            });
+
+            // Load saved reminders
+            loadReminders();
+        }
+
+        // ==================== LOCATION SELECTION ====================
+        function setSelectedLocation(latlng) {
+            selectedLocation = latlng;
+
+            // Remove previous selection marker
+            if (selectedMarker) {
+                map.removeLayer(selectedMarker);
+            }
+
+            // Add new selection marker
+            selectedMarker = L.marker([latlng.lat, latlng.lng], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).addTo(map);
+
+            selectedMarker.bindPopup("📍 Selected location").openPopup();
+
+            // Update UI
+            document.getElementById('selectedLocation').value =
+                `${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
+            document.getElementById('addReminderBtn').disabled = false;
+        }
+
+        // ==================== GPS TRACKING ====================
+        function startGPSTracking() {
+            if (!navigator.geolocation) {
+                updateStatus('error', '❌ GPS not supported by your browser');
+                return;
+            }
+
+            // Request permission for notifications
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            // Start watching position
+            watchId = navigator.geolocation.watchPosition(
+                onLocationSuccess,
+                onLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                }
+            );
+
+            updateStatus('success', '✅ GPS tracking active');
+        }
+
+        function onLocationSuccess(position) {
+            userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+
+            // Update or create user marker
+            if (!userMarker) {
+                userMarker = L.marker([userLocation.lat, userLocation.lng], {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                }).addTo(map);
+
+                userMarker.bindPopup("📱 You are here").openPopup();
+                map.setView([userLocation.lat, userLocation.lng], 13);
+            } else {
+                userMarker.setLatLng([userLocation.lat, userLocation.lng]);
+            }
+
+            // Check geofences
+            checkGeofences();
+        }
+
+        function onLocationError(error) {
+            console.error('GPS Error:', error);
+            updateStatus('warning', '⚠️ GPS error: ' + error.message);
+        }
+
+        // ==================== GEOFENCE CHECKING ====================
+        function checkGeofences() {
+            if (!userLocation || reminders.length === 0) return;
+
+            reminders.forEach(reminder => {
+                const distance = calculateDistance(
+                    userLocation.lat,
+                    userLocation.lng,
+                    reminder.lat,
+                    reminder.lng
+                );
+
+                // If within radius and not already triggered
+                if (distance <= reminder.radius && !reminder.triggered) {
+                    reminder.triggered = true;
+                    triggerReminder(reminder);
+                    saveReminders();
+                } else if (distance > reminder.radius && reminder.triggered) {
+                    // Reset trigger when user leaves the area
+                    reminder.triggered = false;
+                    saveReminders();
+                }
+            });
+        }
+
+        // ==================== DISTANCE CALCULATION ====================
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            // Haversine formula
+            const R = 6371000; // Earth's radius in meters
+            const dLat = toRad(lat2 - lat1);
+            const dLon = toRad(lon2 - lon1);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function toRad(degrees) {
+            return degrees * Math.PI / 180;
+        }
+
+        // ==================== TRIGGER REMINDER ====================
+        function triggerReminder(reminder) {
+            // Play sound
+            playNotificationSound();
+
+            // Show browser notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('📍 Geofence Alert!', {
+                    body: `${reminder.title}\n${reminder.note || ''}`,
+                    icon: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png'
+                });
+            }
+
+            // Show in-app notification
+            showInAppNotification(reminder);
+
+            updateStatus('success', `🔔 Reminder: ${reminder.title}`);
+        }
+
+        function showInAppNotification(reminder) {
+            const notif = document.createElement('div');
+            notif.className = 'notification-popup';
+            notif.innerHTML = `
+                <button class="close-notif" onclick="this.parentElement.remove()">×</button>
+                <h3>🔔 You're near!</h3>
+                <h4>${reminder.title}</h4>
+                ${reminder.note ? `<p>${reminder.note}</p>` : ''}
+                <p style="color: #999; font-size: 0.85em; margin-top: 10px;">
+                    ${new Date().toLocaleTimeString()}
+                </p>
+            `;
+            document.body.appendChild(notif);
+
+            setTimeout(() => {
+                if (notif.parentElement) {
+                    notif.remove();
+                }
+            }, 8000);
+        }
+
+        function playNotificationSound() {
+            // Create a simple beep using Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // ==================== FORM HANDLING ====================
+        document.getElementById('reminderForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            if (!selectedLocation) {
+                alert('Please select a location on the map first!');
+                return;
+            }
+
+            if (editingId !== null) {
+                // UPDATE EXISTING REMINDER
+                const index = reminders.findIndex(r => r.id === editingId);
+                if (index !== -1) {
+                    // Remove old geofence circle
+                    const geoItem = geofenceCircles.find(g => g.id === editingId);
+                    if (geoItem) {
+                        map.removeLayer(geoItem.circle);
+                        map.removeLayer(geoItem.marker);
+                        geofenceCircles = geofenceCircles.filter(g => g.id !== editingId);
+                    }
+
+                    // Update reminder
+                    reminders[index] = {
+                        ...reminders[index],
+                        title: document.getElementById('reminderTitle').value,
+                        note: document.getElementById('reminderNote').value,
+                        radius: parseInt(document.getElementById('reminderRadius').value),
+                        lat: selectedLocation.lat,
+                        lng: selectedLocation.lng,
+                        triggered: false // Reset trigger status
+                    };
+
+                    saveReminders();
+                    renderReminders();
+                    addGeofenceCircle(reminders[index]);
+                    updateStatus('success', '✅ Reminder updated successfully!');
+                }
+
+                // Exit edit mode
+                exitEditMode();
+            } else {
+                // ADD NEW REMINDER
+                const reminder = {
+                    id: Date.now(),
+                    title: document.getElementById('reminderTitle').value,
+                    note: document.getElementById('reminderNote').value,
+                    radius: parseInt(document.getElementById('reminderRadius').value),
+                    lat: selectedLocation.lat,
+                    lng: selectedLocation.lng,
+                    triggered: false,
+                    createdAt: new Date().toISOString()
+                };
+
+                reminders.push(reminder);
+                saveReminders();
+                renderReminders();
+                addGeofenceCircle(reminder);
+                updateStatus('success', '✅ Reminder added successfully!');
+            }
+
+            // Reset form
+            this.reset();
+            if (selectedMarker) {
+                map.removeLayer(selectedMarker);
+                selectedMarker = null;
+            }
+            selectedLocation = null;
+            document.getElementById('selectedLocation').value = '';
+            document.getElementById('addReminderBtn').disabled = true;
+        });
+
+        // ==================== GEOFENCE VISUALIZATION ====================
+        function addGeofenceCircle(reminder) {
+            const circle = L.circle([reminder.lat, reminder.lng], {
+                color: '#667eea',
+                fillColor: '#667eea',
+                fillOpacity: 0.2,
+                radius: reminder.radius
+            }).addTo(map);
+
+            const marker = L.marker([reminder.lat, reminder.lng], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).addTo(map);
+
+            marker.bindPopup(`
+                <strong>${reminder.title}</strong><br>
+                ${reminder.note || ''}<br>
+                <small>Radius: ${reminder.radius}m</small>
+            `);
+
+            geofenceCircles.push({ id: reminder.id, circle, marker });
+        }
+
+        // ==================== RENDER REMINDERS ====================
+        function renderReminders() {
+            const list = document.getElementById('remindersList');
+            const count = document.getElementById('reminderCount');
+
+            count.textContent = reminders.length;
+
+            if (reminders.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="#999" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <p>No reminders yet</p>
+                        <p style="font-size: 0.85em;">Click on the map to add your first geofence!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = reminders.map(reminder => `
+                <div class="reminder-item">
+                    <button class="edit-btn" onclick="editReminder(${reminder.id})">✏️ Edit</button>
+                    <button class="delete-btn" onclick="deleteReminder(${reminder.id})">🗑️ Delete</button>
+                    <h4>${reminder.title}</h4>
+                    ${reminder.note ? `<p>${reminder.note}</p>` : ''}
+                    <p style="font-size: 0.85em; color: #999;">
+                        📍 ${reminder.lat.toFixed(4)}, ${reminder.lng.toFixed(4)}
+                    </p>
+                    <span class="radius-badge">⭕ ${reminder.radius}m radius</span>
+                    ${reminder.triggered ? '<span class="radius-badge" style="background: #28a745; margin-left: 5px;">🔔 Active</span>' : ''}
+                </div>
+            `).join('');
+        }
+
+        // ==================== DELETE REMINDER ====================
+        function deleteReminder(id) {
+            if (!confirm('Delete this reminder?')) return;
+
+            reminders = reminders.filter(r => r.id !== id);
+            saveReminders();
+            renderReminders();
+
+            // Remove circle and marker
+            const geoItem = geofenceCircles.find(g => g.id === id);
+            if (geoItem) {
+                map.removeLayer(geoItem.circle);
+                map.removeLayer(geoItem.marker);
+                geofenceCircles = geofenceCircles.filter(g => g.id !== id);
+            }
+
+            updateStatus('success', '🗑️ Reminder deleted');
+        }
+
+        // ==================== EDIT REMINDER ====================
+        function editReminder(id) {
+            const reminder = reminders.find(r => r.id === id);
+            if (!reminder) return;
+
+            // Set edit mode
+            editingId = id;
+
+            // Populate form with existing data
+            document.getElementById('reminderTitle').value = reminder.title;
+            document.getElementById('reminderNote').value = reminder.note || '';
+            document.getElementById('reminderRadius').value = reminder.radius;
+
+            // Set location on map
+            setSelectedLocation({ lat: reminder.lat, lng: reminder.lng });
+
+            // Update button text
+            const submitBtn = document.getElementById('addReminderBtn');
+            submitBtn.textContent = '💾 Update Reminder';
+            submitBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+
+            // Add cancel button if not exists
+            if (!document.getElementById('cancelEditBtn')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.type = 'button';
+                cancelBtn.id = 'cancelEditBtn';
+                cancelBtn.className = 'btn-cancel';
+                cancelBtn.textContent = '❌ Cancel Edit';
+                cancelBtn.onclick = exitEditMode;
+                document.getElementById('reminderForm').appendChild(cancelBtn);
+            }
+
+            // Scroll to form
+            document.querySelector('.sidebar').scrollTop = 0;
+
+            // Pan map to the reminder location
+            map.setView([reminder.lat, reminder.lng], 15);
+
+            updateStatus('warning', '✏️ Edit mode: Update the reminder details');
+        }
+
+        function exitEditMode() {
+            editingId = null;
+
+            // Reset form
+            document.getElementById('reminderForm').reset();
+            document.getElementById('selectedLocation').value = '';
+
+            // Reset button
+            const submitBtn = document.getElementById('addReminderBtn');
+            submitBtn.textContent = '➕ Add Geofence Reminder';
+            submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            submitBtn.disabled = true;
+
+            // Remove cancel button
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            if (cancelBtn) cancelBtn.remove();
+
+            // Clear map selection
+            if (selectedMarker) {
+                map.removeLayer(selectedMarker);
+                selectedMarker = null;
+            }
+            selectedLocation = null;
+
+            updateStatus('success', '✅ Edit cancelled');
+        }
+
+        // ==================== LOCAL STORAGE ====================
+        function saveReminders() {
+            localStorage.setItem('geofenceReminders', JSON.stringify(reminders));
+        }
+
+        function loadReminders() {
+            const saved = localStorage.getItem('geofenceReminders');
+            if (saved) {
+                reminders = JSON.parse(saved);
+                renderReminders();
+                reminders.forEach(reminder => {
+                    addGeofenceCircle(reminder);
+                });
+            }
+        }
+
+        // ==================== STATUS BAR ====================
+        function updateStatus(type, message) {
+            const bar = document.getElementById('statusBar');
+            bar.className = `status-bar ${type}`;
+            bar.textContent = message;
+        }
+
+        // ==================== INITIALIZATION ====================
+        window.onload = function () {
+            initMap();
+            startGPSTracking();
+            initMapControls();
+
+            // Periodic check (backup to watchPosition)
+            setInterval(() => {
+                if (userLocation) {
+                    checkGeofences();
+                }
+            }, CONFIG.checkInterval);
+        };
+
+        // ==================== MAP CONTROLS ====================
+        function initMapControls() {
+            const panDistance = 0.01; // Adjust for pan sensitivity
+
+            // Pan Up
+            document.getElementById('panUp').addEventListener('click', function () {
+                const center = map.getCenter();
+                map.panTo([center.lat + panDistance, center.lng]);
+            });
+
+            // Pan Down
+            document.getElementById('panDown').addEventListener('click', function () {
+                const center = map.getCenter();
+                map.panTo([center.lat - panDistance, center.lng]);
+            });
+
+            // Pan Left
+            document.getElementById('panLeft').addEventListener('click', function () {
+                const center = map.getCenter();
+                map.panTo([center.lat, center.lng - panDistance]);
+            });
+
+            // Pan Right
+            document.getElementById('panRight').addEventListener('click', function () {
+                const center = map.getCenter();
+                map.panTo([center.lat, center.lng + panDistance]);
+            });
+
+            // Center on user location
+            document.getElementById('centerMap').addEventListener('click', function () {
+                if (userLocation) {
+                    map.setView([userLocation.lat, userLocation.lng], 15);
+                    updateStatus('success', '🎯 Centered on your location');
+                } else {
+                    updateStatus('warning', '⚠️ Waiting for GPS location...');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
