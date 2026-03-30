@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geofence Reminder System</title>
-    
+
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
+
     <style>
         * {
             margin: 0;
@@ -27,7 +28,7 @@
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
@@ -160,7 +161,7 @@
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: relative;
         }
 
@@ -286,6 +287,7 @@
                 transform: translateX(400px);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -299,7 +301,7 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             z-index: 10000;
             animation: slideIn 0.5s ease-out;
             max-width: 350px;
@@ -342,14 +344,14 @@
             width: 45px;
             height: 45px;
             background: white;
-            border: 2px solid rgba(0,0,0,0.2);
+            border: 2px solid rgba(0, 0, 0, 0.2);
             border-radius: 8px;
             cursor: pointer;
             font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             transition: all 0.2s;
             user-select: none;
         }
@@ -357,7 +359,7 @@
         .nav-btn:hover {
             background: #f0f0f0;
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .nav-btn:active {
@@ -391,6 +393,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -405,7 +408,7 @@
         <div class="content">
             <div style="position: relative;">
                 <div id="map"></div>
-                
+
                 <!-- Map Navigation Controls -->
                 <div class="map-controls">
                     <div class="control-row">
@@ -421,7 +424,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="sidebar">
                 <div class="info-box">
                     <p><strong>📍 How to use:</strong></p>
@@ -456,16 +459,10 @@
 
                     <div class="form-group" id="customRadiusGroup" style="display: none;">
                         <label for="customRadius">📏 Enter Custom Radius (meters)</label>
-                        <input 
-                            type="number" 
-                            id="customRadius" 
-                            placeholder="e.g., 75, 350, 2000" 
-                            min="10" 
-                            max="50000"
-                            step="1"
-                        >
+                        <input type="number" id="customRadius" placeholder="e.g., 75, 350, 2000" min="1" max="50000"
+                            step="1">
                         <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">
-                            Min: 10m | Max: 50km (50,000m)
+                            Min: 1m | Max: 50km (50,000m)
                         </small>
                     </div>
 
@@ -489,7 +486,7 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+
     <script>
         // ==================== CONFIGURATION ====================
         const CONFIG = {
@@ -513,14 +510,14 @@
         // ==================== INITIALIZE MAP ====================
         function initMap() {
             map = L.map('map').setView(CONFIG.defaultCenter, CONFIG.defaultZoom);
-            
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
             }).addTo(map);
 
             // Click event to select location
-            map.on('click', function(e) {
+            map.on('click', function (e) {
                 setSelectedLocation(e.latlng);
             });
 
@@ -531,7 +528,7 @@
         // ==================== LOCATION SELECTION ====================
         function setSelectedLocation(latlng) {
             selectedLocation = latlng;
-            
+
             // Remove previous selection marker
             if (selectedMarker) {
                 map.removeLayer(selectedMarker);
@@ -552,7 +549,7 @@
             selectedMarker.bindPopup("📍 Selected location").openPopup();
 
             // Update UI
-            document.getElementById('selectedLocation').value = 
+            document.getElementById('selectedLocation').value =
                 `${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
             document.getElementById('addReminderBtn').disabled = false;
         }
@@ -601,7 +598,7 @@
                         shadowSize: [41, 41]
                     })
                 }).addTo(map);
-                
+
                 userMarker.bindPopup("📱 You are here").openPopup();
                 map.setView([userLocation.lat, userLocation.lng], 13);
             } else {
@@ -648,11 +645,11 @@
             const R = 6371000; // Earth's radius in meters
             const dLat = toRad(lat2 - lat1);
             const dLon = toRad(lon2 - lon1);
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             return R * c;
         }
 
@@ -725,10 +722,10 @@
 
         // ==================== FORM HANDLING ====================
         // Handle custom radius toggle
-        document.getElementById('reminderRadius').addEventListener('change', function() {
+        document.getElementById('reminderRadius').addEventListener('change', function () {
             const customGroup = document.getElementById('customRadiusGroup');
             const customInput = document.getElementById('customRadius');
-            
+
             if (this.value === 'custom') {
                 customGroup.style.display = 'block';
                 customInput.required = true;
@@ -740,7 +737,7 @@
             }
         });
 
-        document.getElementById('reminderForm').addEventListener('submit', function(e) {
+        document.getElementById('reminderForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             if (!selectedLocation) {
@@ -751,13 +748,13 @@
             // Get radius value
             let radiusValue;
             const radiusSelect = document.getElementById('reminderRadius').value;
-            
+
             if (radiusSelect === 'custom') {
                 radiusValue = parseInt(document.getElementById('customRadius').value);
-                
+
                 // Validate custom radius
-                if (!radiusValue || radiusValue < 10 || radiusValue > 50000) {
-                    alert('Please enter a valid radius between 10 and 50,000 meters!');
+                if (!radiusValue || radiusValue < 1 || radiusValue > 50000) {
+                    alert('Please enter a valid radius between 1 and 50,000 meters!');
                     return;
                 }
             } else {
@@ -861,7 +858,7 @@
         function renderReminders() {
             const list = document.getElementById('remindersList');
             const count = document.getElementById('reminderCount');
-            
+
             count.textContent = reminders.length;
 
             if (reminders.length === 0) {
@@ -932,11 +929,11 @@
             // Populate form with existing data
             document.getElementById('reminderTitle').value = reminder.title;
             document.getElementById('reminderNote').value = reminder.note || '';
-            
+
             // Handle radius - check if it's a preset value or custom
             const radiusSelect = document.getElementById('reminderRadius');
             const presetValues = ['50', '100', '200', '500', '1000'];
-            
+
             if (presetValues.includes(reminder.radius.toString())) {
                 // It's a preset value
                 radiusSelect.value = reminder.radius;
@@ -1031,11 +1028,11 @@
         }
 
         // ==================== INITIALIZATION ====================
-        window.onload = function() {
+        window.onload = function () {
             initMap();
             startGPSTracking();
             initMapControls();
-            
+
             // Periodic check (backup to watchPosition)
             setInterval(() => {
                 if (userLocation) {
@@ -1049,31 +1046,31 @@
             const panDistance = 0.01; // Adjust for pan sensitivity
 
             // Pan Up
-            document.getElementById('panUp').addEventListener('click', function() {
+            document.getElementById('panUp').addEventListener('click', function () {
                 const center = map.getCenter();
                 map.panTo([center.lat + panDistance, center.lng]);
             });
 
             // Pan Down
-            document.getElementById('panDown').addEventListener('click', function() {
+            document.getElementById('panDown').addEventListener('click', function () {
                 const center = map.getCenter();
                 map.panTo([center.lat - panDistance, center.lng]);
             });
 
             // Pan Left
-            document.getElementById('panLeft').addEventListener('click', function() {
+            document.getElementById('panLeft').addEventListener('click', function () {
                 const center = map.getCenter();
                 map.panTo([center.lat, center.lng - panDistance]);
             });
 
             // Pan Right
-            document.getElementById('panRight').addEventListener('click', function() {
+            document.getElementById('panRight').addEventListener('click', function () {
                 const center = map.getCenter();
                 map.panTo([center.lat, center.lng + panDistance]);
             });
 
             // Center on user location
-            document.getElementById('centerMap').addEventListener('click', function() {
+            document.getElementById('centerMap').addEventListener('click', function () {
                 if (userLocation) {
                     map.setView([userLocation.lat, userLocation.lng], 15);
                     updateStatus('success', '🎯 Centered on your location');
@@ -1084,4 +1081,5 @@
         }
     </script>
 </body>
+
 </html>
