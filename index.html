@@ -18,45 +18,47 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 100vh;
             overflow: hidden;
         }
 
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: black;
             color: white;
-            padding: 30px;
+            padding: 20px 30px;
             text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 2em;
+            margin-bottom: 5px;
         }
 
         .header p {
             opacity: 0.9;
-            font-size: 1.1em;
+            font-size: 1em;
         }
 
         .content {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 420px;
             gap: 0;
+            flex: 1;
+            overflow: hidden;
         }
 
         #map {
-            height: 600px;
+            height: 100%;
             width: 100%;
         }
 
@@ -64,7 +66,62 @@
             background: #f8f9fa;
             padding: 30px;
             overflow-y: auto;
-            max-height: 600px;
+            border-left: 1px solid #e0e0e0;
+        }
+
+        /* Step-by-step form styles */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .step-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-dot.completed {
+            background: #28a745;
+            color: white;
         }
 
         .form-group {
@@ -76,6 +133,7 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: #333;
+            font-size: 1.1em;
         }
 
         .form-group input,
@@ -101,10 +159,16 @@
             min-height: 80px;
         }
 
+        .form-navigation {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
         .btn {
-            width: 100%;
+            flex: 1;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: black;
             color: white;
             border: none;
             border-radius: 8px;
@@ -126,6 +190,15 @@
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
         }
 
         .btn-cancel {
@@ -145,6 +218,60 @@
         .btn-cancel:hover {
             background: #5a6268;
             transform: translateY(-2px);
+        }
+
+        /* Audio upload styles */
+        .audio-upload {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .audio-upload:hover {
+            background: #f0f4ff;
+            border-color: #5568d3;
+        }
+
+        .audio-upload.has-file {
+            border-style: solid;
+            background: #e8f5e9;
+            border-color: #28a745;
+        }
+
+        .audio-upload input[type="file"] {
+            display: none;
+        }
+
+        .audio-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .audio-preview.active {
+            display: block;
+        }
+
+        .audio-preview audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .remove-audio {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 10px;
         }
 
         .reminder-list {
@@ -187,6 +314,17 @@
             margin-top: 8px;
         }
 
+        .reminder-item .audio-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-top: 8px;
+            margin-left: 5px;
+        }
+
         .delete-btn {
             position: absolute;
             top: 15px;
@@ -224,11 +362,12 @@
         }
 
         .status-bar {
-            background: #28a745;
+            background: #ff2a0e;
             color: white;
-            padding: 12px 30px;
+            padding: 10px 30px;
             text-align: center;
             font-weight: 600;
+            font-size: 0.9em;
         }
 
         .status-bar.warning {
@@ -270,14 +409,15 @@
         @media (max-width: 768px) {
             .content {
                 grid-template-columns: 1fr;
+                grid-template-rows: 50vh 1fr;
             }
 
-            #map {
-                height: 400px;
+            .header h1 {
+                font-size: 1.5em;
             }
 
-            .sidebar {
-                max-height: none;
+            .header p {
+                font-size: 0.9em;
             }
         }
 
@@ -296,7 +436,7 @@
 
         .notification-popup {
             position: fixed;
-            top: 20px;
+            top: 80px;
             right: 20px;
             background: white;
             padding: 20px;
@@ -326,7 +466,7 @@
         /* Map Navigation Controls */
         .map-controls {
             position: absolute;
-            top: 80px;
+            top: 10px;
             left: 10px;
             z-index: 1000;
             display: flex;
@@ -428,52 +568,132 @@
             <div class="sidebar">
                 <div class="info-box">
                     <p><strong>📍 How to use:</strong></p>
-                    <p>1. Click on the map to select a location</p>
-                    <p>2. Fill in your reminder details</p>
-                    <p>3. Set how close you need to be (radius)</p>
-                    <p>4. Get notified when you enter the area!</p>
+                    <p>Follow the step-by-step guide below to create your location reminder</p>
+                </div>
+
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div class="step-dot active" data-step="1">1</div>
+                    <div class="step-dot" data-step="2">2</div>
+                    <div class="step-dot" data-step="3">3</div>
+                    <div class="step-dot" data-step="4">4</div>
+                    <div class="step-dot" data-step="5">5</div>
                 </div>
 
                 <form id="reminderForm">
-                    <div class="form-group">
-                        <label for="reminderTitle">📝 Reminder Title</label>
-                        <input type="text" id="reminderTitle" placeholder="e.g., Buy groceries" required>
+                    <!-- Step 1: Location -->
+                    <div class="form-step active" data-step="1">
+                        <div class="form-group">
+                            <label for="selectedLocation">📌 Step 1: Select Location on Map</label>
+                            <input type="text" id="selectedLocation" placeholder="Click on map to select" readonly>
+                            <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
+                                👆 Click anywhere on the map to choose your reminder location
+                            </p>
+                        </div>
+                        <div class="form-navigation">
+                            <button type="button" class="btn" id="nextStep1" disabled>
+                                Next: Add Title →
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="reminderNote">💬 Notes (optional)</label>
-                        <textarea id="reminderNote" placeholder="Additional details..."></textarea>
+                    <!-- Step 2: Title -->
+                    <div class="form-step" data-step="2">
+                        <div class="form-group">
+                            <label for="reminderTitle">📝 Step 2: Reminder Title</label>
+                            <input type="text" id="reminderTitle" placeholder="e.g., Buy groceries, Pick up package"
+                                required>
+                        </div>
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary prevStep">
+                                ← Back
+                            </button>
+                            <button type="button" class="btn" id="nextStep2" disabled>
+                                Next: Add Notes →
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="reminderRadius">⭕ Alert Radius</label>
-                        <select id="reminderRadius" required>
-                            <option value="50">50 meters (Very close)</option>
-                            <option value="100" selected>100 meters (Close)</option>
-                            <option value="200">200 meters (Nearby)</option>
-                            <option value="500">500 meters (Area)</option>
-                            <option value="1000">1 kilometer (Wide area)</option>
-                            <option value="custom">🎯 Custom (Type your own)</option>
-                        </select>
+                    <!-- Step 3: Notes -->
+                    <div class="form-step" data-step="3">
+                        <div class="form-group">
+                            <label for="reminderNote">💬 Step 3: Notes (Optional)</label>
+                            <textarea id="reminderNote" placeholder="Additional details..."></textarea>
+                            <p style="color: #666; font-size: 0.9em; margin-top: 5px;">
+                                You can skip this step if you don't need notes
+                            </p>
+                        </div>
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary prevStep">
+                                ← Back
+                            </button>
+                            <button type="button" class="btn nextStep">
+                                Next: Set Radius →
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="form-group" id="customRadiusGroup" style="display: none;">
-                        <label for="customRadius">📏 Enter Custom Radius (meters)</label>
-                        <input type="number" id="customRadius" placeholder="e.g., 75, 350, 2000" min="1" max="50000"
-                            step="1">
-                        <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">
-                            Min: 1m | Max: 50km (50,000m)
-                        </small>
+                    <!-- Step 4: Radius -->
+                    <div class="form-step" data-step="4">
+                        <div class="form-group">
+                            <label for="reminderRadius">⭕ Step 4: Alert Radius</label>
+                            <select id="reminderRadius" required>
+                                <option value="50">50 meters (Very close)</option>
+                                <option value="100" selected>100 meters (Close)</option>
+                                <option value="200">200 meters (Nearby)</option>
+                                <option value="500">500 meters (Area)</option>
+                                <option value="1000">1 kilometer (Wide area)</option>
+                                <option value="custom">🎯 Custom (Type your own)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="customRadiusGroup" style="display: none;">
+                            <label for="customRadius">📏 Enter Custom Radius (meters)</label>
+                            <input type="number" id="customRadius" placeholder="e.g., 75, 350, 2000" min="1" max="50000"
+                                step="1">
+                            <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">
+                                Min: 1m | Max: 50km (50,000m)
+                            </small>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary prevStep">
+                                ← Back
+                            </button>
+                            <button type="button" class="btn nextStep">
+                                Next: Add Sound →
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>📌 Selected Location</label>
-                        <input type="text" id="selectedLocation" placeholder="Click on map to select" readonly>
-                    </div>
+                    <!-- Step 5: Audio -->
+                    <div class="form-step" data-step="5">
+                        <div class="form-group">
+                            <label>🔊 Step 5: Notification Sound</label>
+                            <div class="audio-upload" id="audioUploadArea">
+                                <input type="file" id="audioFile" accept="audio/*">
+                                <p id="uploadText">
+                                    🎵 Click to upload custom audio<br>
+                                    <small style="color: #666;">or use default beep sound</small>
+                                </p>
+                            </div>
+                            <div class="audio-preview" id="audioPreview">
+                                <p style="font-weight: 600; margin-bottom: 5px;">Selected audio:</p>
+                                <p id="audioFileName"></p>
+                                <audio id="audioPlayer" controls></audio>
+                                <button type="button" class="remove-audio" id="removeAudio">🗑️ Remove</button>
+                            </div>
+                        </div>
 
-                    <button type="submit" class="btn" id="addReminderBtn" disabled>
-                        ➕ Add Geofence Reminder
-                    </button>
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary prevStep">
+                                ← Back
+                            </button>
+                            <button type="submit" class="btn" id="submitBtn">
+                                ✅ Create Reminder
+                            </button>
+                        </div>
+                    </div>
                 </form>
 
                 <div class="reminder-list">
@@ -493,7 +713,6 @@
             defaultCenter: [20.5937, 78.9629], // India center
             defaultZoom: 5,
             checkInterval: 10000, // Check location every 10 seconds
-            notificationSound: true
         };
 
         // ==================== STATE MANAGEMENT ====================
@@ -505,7 +724,9 @@
         let watchId = null;
         let userLocation = null;
         let geofenceCircles = [];
-        let editingId = null; // Track which reminder is being edited
+        let editingId = null;
+        let currentStep = 1;
+        let uploadedAudio = null; // Store uploaded audio file
 
         // ==================== INITIALIZE MAP ====================
         function initMap() {
@@ -551,7 +772,7 @@
             // Update UI
             document.getElementById('selectedLocation').value =
                 `${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
-            document.getElementById('addReminderBtn').disabled = false;
+            document.getElementById('nextStep1').disabled = false;
         }
 
         // ==================== GPS TRACKING ====================
@@ -659,8 +880,12 @@
 
         // ==================== TRIGGER REMINDER ====================
         function triggerReminder(reminder) {
-            // Play sound
-            playNotificationSound();
+            // Play sound (custom or default)
+            if (reminder.audioData) {
+                playCustomAudio(reminder.audioData);
+            } else {
+                playNotificationSound();
+            }
 
             // Show browser notification
             if ('Notification' in window && Notification.permission === 'granted') {
@@ -697,6 +922,17 @@
             }, 8000);
         }
 
+        function playCustomAudio(audioData) {
+            try {
+                const audio = new Audio(audioData);
+                audio.volume = 0.7;
+                audio.play();
+            } catch (e) {
+                console.log('Could not play custom audio:', e);
+                playNotificationSound(); // Fallback to beep
+            }
+        }
+
         function playNotificationSound() {
             // Create a simple beep using Web Audio API
             try {
@@ -720,8 +956,100 @@
             }
         }
 
-        // ==================== FORM HANDLING ====================
-        // Handle custom radius toggle
+        // ==================== STEP NAVIGATION ====================
+        function showStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // Show current step
+            document.querySelector(`.form-step[data-step="${stepNumber}"]`).classList.add('active');
+
+            // Update step indicators
+            document.querySelectorAll('.step-dot').forEach(dot => {
+                const dotStep = parseInt(dot.dataset.step);
+                dot.classList.remove('active', 'completed');
+
+                if (dotStep === stepNumber) {
+                    dot.classList.add('active');
+                } else if (dotStep < stepNumber) {
+                    dot.classList.add('completed');
+                }
+            });
+
+            currentStep = stepNumber;
+
+            // Scroll to top
+            document.querySelector('.sidebar').scrollTop = 0;
+        }
+
+        // Next Step buttons
+        document.getElementById('nextStep1').addEventListener('click', () => showStep(2));
+
+        document.getElementById('reminderTitle').addEventListener('input', function () {
+            document.getElementById('nextStep2').disabled = this.value.trim() === '';
+        });
+
+        document.getElementById('nextStep2').addEventListener('click', () => showStep(3));
+
+        // Previous buttons
+        document.querySelectorAll('.prevStep').forEach(btn => {
+            btn.addEventListener('click', () => showStep(currentStep - 1));
+        });
+
+        // Generic next buttons
+        document.querySelectorAll('.nextStep').forEach(btn => {
+            btn.addEventListener('click', () => showStep(currentStep + 1));
+        });
+
+        // ==================== AUDIO UPLOAD ====================
+        document.getElementById('audioUploadArea').addEventListener('click', function () {
+            document.getElementById('audioFile').click();
+        });
+
+        document.getElementById('audioFile').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('audio/')) {
+                alert('Please select a valid audio file!');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                uploadedAudio = event.target.result;
+
+                // Update UI
+                document.getElementById('audioUploadArea').classList.add('has-file');
+                document.getElementById('uploadText').innerHTML = `
+                    ✅ Audio uploaded!<br>
+                    <small>Click to change</small>
+                `;
+
+                // Show preview
+                document.getElementById('audioFileName').textContent = file.name;
+                document.getElementById('audioPlayer').src = uploadedAudio;
+                document.getElementById('audioPreview').classList.add('active');
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('removeAudio').addEventListener('click', function (e) {
+            e.stopPropagation();
+            uploadedAudio = null;
+            document.getElementById('audioFile').value = '';
+            document.getElementById('audioUploadArea').classList.remove('has-file');
+            document.getElementById('uploadText').innerHTML = `
+                🎵 Click to upload custom audio<br>
+                <small style="color: #666;">or use default beep sound</small>
+            `;
+            document.getElementById('audioPreview').classList.remove('active');
+        });
+
+        // ==================== CUSTOM RADIUS ====================
         document.getElementById('reminderRadius').addEventListener('change', function () {
             const customGroup = document.getElementById('customRadiusGroup');
             const customInput = document.getElementById('customRadius');
@@ -737,6 +1065,7 @@
             }
         });
 
+        // ==================== FORM SUBMISSION ====================
         document.getElementById('reminderForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -781,7 +1110,8 @@
                         radius: radiusValue,
                         lat: selectedLocation.lat,
                         lng: selectedLocation.lng,
-                        triggered: false // Reset trigger status
+                        audioData: uploadedAudio,
+                        triggered: false
                     };
 
                     saveReminders();
@@ -790,7 +1120,6 @@
                     updateStatus('success', '✅ Reminder updated successfully!');
                 }
 
-                // Exit edit mode
                 exitEditMode();
             } else {
                 // ADD NEW REMINDER
@@ -801,6 +1130,7 @@
                     radius: radiusValue,
                     lat: selectedLocation.lat,
                     lng: selectedLocation.lng,
+                    audioData: uploadedAudio,
                     triggered: false,
                     createdAt: new Date().toISOString()
                 };
@@ -813,17 +1143,44 @@
             }
 
             // Reset form
-            this.reset();
+            resetForm();
+        });
+
+        function resetForm() {
+            document.getElementById('reminderForm').reset();
             document.getElementById('customRadiusGroup').style.display = 'none';
             document.getElementById('customRadius').required = false;
+
             if (selectedMarker) {
                 map.removeLayer(selectedMarker);
                 selectedMarker = null;
             }
             selectedLocation = null;
+            uploadedAudio = null;
+
             document.getElementById('selectedLocation').value = '';
-            document.getElementById('addReminderBtn').disabled = true;
-        });
+            document.getElementById('audioUploadArea').classList.remove('has-file');
+            document.getElementById('uploadText').innerHTML = `
+                🎵 Click to upload custom audio<br>
+                <small style="color: #666;">or use default beep sound</small>
+            `;
+            document.getElementById('audioPreview').classList.remove('active');
+            document.getElementById('audioFile').value = '';
+
+            // Reset to step 1
+            showStep(1);
+            document.getElementById('nextStep1').disabled = true;
+            document.getElementById('nextStep2').disabled = true;
+        }
+
+        function exitEditMode() {
+            editingId = null;
+            document.getElementById('submitBtn').textContent = '✅ Create Reminder';
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            if (cancelBtn) cancelBtn.remove();
+            resetForm();
+            updateStatus('success', '✅ Edit cancelled');
+        }
 
         // ==================== GEOFENCE VISUALIZATION ====================
         function addGeofenceCircle(reminder) {
@@ -893,6 +1250,7 @@
                             📍 ${reminder.lat.toFixed(4)}, ${reminder.lng.toFixed(4)}
                         </p>
                         <span class="radius-badge">⭕ ${radiusDisplay}</span>
+                        ${reminder.audioData ? '<span class="audio-badge">🔊 Custom Sound</span>' : ''}
                         ${reminder.triggered ? '<span class="radius-badge" style="background: #28a745; margin-left: 5px;">🔔 Active</span>' : ''}
                     </div>
                 `;
@@ -923,39 +1281,51 @@
             const reminder = reminders.find(r => r.id === id);
             if (!reminder) return;
 
-            // Set edit mode
             editingId = id;
 
-            // Populate form with existing data
+            // Set location first
+            setSelectedLocation({ lat: reminder.lat, lng: reminder.lng });
+
+            // Populate all form fields
             document.getElementById('reminderTitle').value = reminder.title;
             document.getElementById('reminderNote').value = reminder.note || '';
 
-            // Handle radius - check if it's a preset value or custom
+            // Handle radius
             const radiusSelect = document.getElementById('reminderRadius');
             const presetValues = ['50', '100', '200', '500', '1000'];
 
             if (presetValues.includes(reminder.radius.toString())) {
-                // It's a preset value
                 radiusSelect.value = reminder.radius;
                 document.getElementById('customRadiusGroup').style.display = 'none';
                 document.getElementById('customRadius').required = false;
             } else {
-                // It's a custom value
                 radiusSelect.value = 'custom';
                 document.getElementById('customRadiusGroup').style.display = 'block';
                 document.getElementById('customRadius').value = reminder.radius;
                 document.getElementById('customRadius').required = true;
             }
 
-            // Set location on map
-            setSelectedLocation({ lat: reminder.lat, lng: reminder.lng });
+            // Handle audio
+            if (reminder.audioData) {
+                uploadedAudio = reminder.audioData;
+                document.getElementById('audioUploadArea').classList.add('has-file');
+                document.getElementById('uploadText').innerHTML = `
+                    ✅ Audio uploaded!<br>
+                    <small>Click to change</small>
+                `;
+                document.getElementById('audioFileName').textContent = 'Custom audio';
+                document.getElementById('audioPlayer').src = uploadedAudio;
+                document.getElementById('audioPreview').classList.add('active');
+            }
 
-            // Update button text
-            const submitBtn = document.getElementById('addReminderBtn');
-            submitBtn.textContent = '💾 Update Reminder';
-            submitBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+            // Enable next buttons
+            document.getElementById('nextStep1').disabled = false;
+            document.getElementById('nextStep2').disabled = false;
 
-            // Add cancel button if not exists
+            // Update submit button
+            document.getElementById('submitBtn').textContent = '💾 Update Reminder';
+
+            // Add cancel button
             if (!document.getElementById('cancelEditBtn')) {
                 const cancelBtn = document.createElement('button');
                 cancelBtn.type = 'button';
@@ -963,45 +1333,15 @@
                 cancelBtn.className = 'btn-cancel';
                 cancelBtn.textContent = '❌ Cancel Edit';
                 cancelBtn.onclick = exitEditMode;
-                document.getElementById('reminderForm').appendChild(cancelBtn);
+                document.querySelector('.reminder-list').before(cancelBtn);
             }
 
-            // Scroll to form
+            // Start from step 1
+            showStep(1);
             document.querySelector('.sidebar').scrollTop = 0;
 
-            // Pan map to the reminder location
             map.setView([reminder.lat, reminder.lng], 15);
-
             updateStatus('warning', '✏️ Edit mode: Update the reminder details');
-        }
-
-        function exitEditMode() {
-            editingId = null;
-
-            // Reset form
-            document.getElementById('reminderForm').reset();
-            document.getElementById('selectedLocation').value = '';
-            document.getElementById('customRadiusGroup').style.display = 'none';
-            document.getElementById('customRadius').required = false;
-
-            // Reset button
-            const submitBtn = document.getElementById('addReminderBtn');
-            submitBtn.textContent = '➕ Add Geofence Reminder';
-            submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-            submitBtn.disabled = true;
-
-            // Remove cancel button
-            const cancelBtn = document.getElementById('cancelEditBtn');
-            if (cancelBtn) cancelBtn.remove();
-
-            // Clear map selection
-            if (selectedMarker) {
-                map.removeLayer(selectedMarker);
-                selectedMarker = null;
-            }
-            selectedLocation = null;
-
-            updateStatus('success', '✅ Edit cancelled');
         }
 
         // ==================== LOCAL STORAGE ====================
@@ -1027,49 +1367,30 @@
             bar.textContent = message;
         }
 
-        // ==================== INITIALIZATION ====================
-        window.onload = function () {
-            initMap();
-            startGPSTracking();
-            initMapControls();
-
-            // Periodic check (backup to watchPosition)
-            setInterval(() => {
-                if (userLocation) {
-                    checkGeofences();
-                }
-            }, CONFIG.checkInterval);
-        };
-
         // ==================== MAP CONTROLS ====================
         function initMapControls() {
-            const panDistance = 0.01; // Adjust for pan sensitivity
+            const panDistance = 0.01;
 
-            // Pan Up
             document.getElementById('panUp').addEventListener('click', function () {
                 const center = map.getCenter();
                 map.panTo([center.lat + panDistance, center.lng]);
             });
 
-            // Pan Down
             document.getElementById('panDown').addEventListener('click', function () {
                 const center = map.getCenter();
                 map.panTo([center.lat - panDistance, center.lng]);
             });
 
-            // Pan Left
             document.getElementById('panLeft').addEventListener('click', function () {
                 const center = map.getCenter();
                 map.panTo([center.lat, center.lng - panDistance]);
             });
 
-            // Pan Right
             document.getElementById('panRight').addEventListener('click', function () {
                 const center = map.getCenter();
                 map.panTo([center.lat, center.lng + panDistance]);
             });
 
-            // Center on user location
             document.getElementById('centerMap').addEventListener('click', function () {
                 if (userLocation) {
                     map.setView([userLocation.lat, userLocation.lng], 15);
@@ -1079,6 +1400,20 @@
                 }
             });
         }
+
+        // ==================== INITIALIZATION ====================
+        window.onload = function () {
+            initMap();
+            startGPSTracking();
+            initMapControls();
+
+            // Periodic check
+            setInterval(() => {
+                if (userLocation) {
+                    checkGeofences();
+                }
+            }, CONFIG.checkInterval);
+        };
     </script>
 </body>
 
